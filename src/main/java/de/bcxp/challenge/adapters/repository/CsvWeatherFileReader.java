@@ -55,7 +55,6 @@ public class CsvWeatherFileReader implements IWeatherFileReader {
                     WeatherRecord record = new WeatherRecord(date, maxTemperature, minTemperature);
                     weatherRecords.add(record);
                 } catch (NumberFormatException e) {
-                    // Log the error or handle it as per your requirement
                     System.err.println("Error parsing line: " + line + " - " + e.getMessage());
                 }
             }

@@ -47,6 +47,5 @@ public class FileWeatherRepositoryTest {
         assertEquals("1", weatherRecords.get(0).getDate());
         assertEquals(88.0, weatherRecords.get(0).getMaxTemperature(), 0.01);
         assertEquals(59.0, weatherRecords.get(0).getMinTemperature(), 0.01);
-        // Add more assertions based on your mock data
     }
 }

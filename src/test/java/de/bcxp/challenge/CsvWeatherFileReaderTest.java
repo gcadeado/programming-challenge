@@ -3,7 +3,6 @@ package de.bcxp.challenge;
 import de.bcxp.challenge.adapters.repository.CsvWeatherFileReader;
 import de.bcxp.challenge.core.entities.WeatherRecord;
 
-import java.io.IOException;
 import java.util.List;
 
 import de.bcxp.challenge.exceptions.FileFormatException;
