@@ -1,10 +1,11 @@
-
-
 # Architecture
 
-For a simple Java application without a UI with focus on separation of concerns, a combination of Hexagonal Architecture and Clean Architecture would be ideal.
-Each layer has a specific role and does not depend on the details of other layers, promoting high cohesion and low coupling, while following S.O.L.I.D. principles.
-Advantages: Improves readability, maintainability, and testability by making the business rules independent of frameworks and other external elements.
+For a simple Java application without a UI, with a focus on separation of concerns, 
+a combination of Hexagonal Architecture and Clean Architecture would be ideal. 
+Each layer has a specific role and does not depend on the details of other layers, 
+promoting high cohesion and low coupling while following S.O.L.I.D. principles. 
+This approach improves readability, maintainability, and testability by 
+making the business rules independent of frameworks and other external elements.
 
 ## Layers
 ### Core (Domain)
@@ -17,20 +18,24 @@ Entities are the core business objects.
 
 #### Use Cases (Interactors)
 
-The Use Cases are the application-specific business rules.
+Use Cases are the application-specific business rules.
 
 ### Ports
 
-Interfaces for external systems (e.g., repository interfaces, service interfaces), enforcing a clear contract between the core and the external systems.
-
+Interfaces for external systems (e.g., repository interfaces, service interfaces), 
+enforcing a clear contract between the core and the external systems.
 ### Adapters
 
-Actual implementations of the interfaces defined in the ports. These could include repositories (for data access), external service clients, etc.
+Actual implementations of the interfaces defined in the ports.
+These could include repositories (for data access), external service clients, etc.
 
 ### Configuration
 
-Manages dependency injection and application configuration logic.
+The application entry point. Manages dependency injection and application configuration logic.
 
 ## Architecture Diagram
 
-TODO
+The architecture diagram illustrates the layered structure of the application,
+highlighting the separation of concerns (layer) and the flow of dependencies.
+
+[[bcxp-solution-diagram.png]]
