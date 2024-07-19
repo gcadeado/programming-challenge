@@ -38,4 +38,4 @@ The application entry point. Manages dependency injection and application config
 The architecture diagram illustrates the layered structure of the application,
 highlighting the separation of concerns (layer) and the flow of dependencies.
 
-[[bcxp-solution-diagram.png]]
+<img src="bcxp-solution-diagram.png">
