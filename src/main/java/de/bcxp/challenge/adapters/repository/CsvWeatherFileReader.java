@@ -1,72 +1,46 @@
 package de.bcxp.challenge.adapters.repository;
 
 import de.bcxp.challenge.core.entities.WeatherRecord;
-import de.bcxp.challenge.exceptions.FileException;
 import de.bcxp.challenge.exceptions.FileFormatException;
-import de.bcxp.challenge.exceptions.FileNotFoundException;
-import de.bcxp.challenge.ports.IWeatherFileReader;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
-public class CsvWeatherFileReader implements IWeatherFileReader {
+public class CsvWeatherFileReader extends CsvFileReader<WeatherRecord> {
+
     @Override
-    public List<WeatherRecord> readWeatherData(String filePath) {
-
-        List<WeatherRecord> weatherRecords = new ArrayList<>();
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        try (InputStream inputStream = classLoader.getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))) {
-
-            String headerLine = br.readLine();
-            // Check if the file is empty
-            if (inputStream == null || headerLine == null) {
-                throw new FileNotFoundException("The file is empty or not found: " + filePath);
-            }
-
-            String[] headers = headerLine.split(",");
-            if (headers.length < 3 ||
-                    !Arrays.asList(headers).contains("Day") ||
-                    !Arrays.asList(headers).contains("MxT") ||
-                    !Arrays.asList(headers).contains("MnT")) {
-                throw new FileFormatException("Invalid CSV file format. Expected headers: Day,MxT,MnT");
-            }
-
-            int dayColumnIndex = Arrays.asList(headers).indexOf("Day");
-            int mxtColumnIndex = Arrays.asList(headers).indexOf("MxT");
-            int mntColumnIndex = Arrays.asList(headers).indexOf("MnT");
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                try {
-                    String[] values = line.split(",");
-                    if (values.length < 3) {
-                        throw new FileFormatException("Invalid CSV line: " + line);
-                    }
-                    String date = values[dayColumnIndex];
-
-                    // Validate numbers
-                    double maxTemperature = validateNumber(values[mxtColumnIndex]);
-                    double minTemperature = validateNumber(values[mntColumnIndex]);
-
-                    WeatherRecord record = new WeatherRecord(date, maxTemperature, minTemperature);
-                    weatherRecords.add(record);
-                } catch (NumberFormatException e) {
-                    System.err.println("Error parsing line: " + line + " - " + e.getMessage());
-                }
-            }
-        }
-        catch (IOException e) {
-            throw new FileException("Error reading CSV file: " + filePath, e);
+    protected WeatherRecord parseLine(String[] values, Map<String, Integer> columnIndexes) throws FileFormatException {
+        if (values.length < columnIndexes.size()) {
+            throw new FileFormatException("Invalid CSV line: " + String.join(",", values));
         }
 
-        return weatherRecords;
+        String date = validateDate(values[columnIndexes.get("Day")]);
+        try {
+            double maxTemperature = validateTemperature(values[columnIndexes.get("MxT")]);
+            double minTemperature = validateTemperature(values[columnIndexes.get("MnT")]);
+            return new WeatherRecord(date, maxTemperature, minTemperature);
+        } catch (NumberFormatException e) {
+            throw new FileFormatException("Invalid CSV line: " + String.join(",", values));
+        }
     }
 
-    private double validateNumber(String s) {
-        return Double.parseDouble(s);
+    @Override
+    protected String[] getExpectedHeaders() {
+        return new String[]{"Day", "MxT", "MnT"};
+    }
+
+    private String validateDate(String dateStr) {
+        try {
+            int date = Integer.parseInt(dateStr);
+            if (date < 1 || date > 31) {
+                throw new FileFormatException("Invalid date number: " + dateStr);
+            }
+            return Integer.toString(date);
+        } catch (NumberFormatException e) {
+            throw new FileFormatException("Invalid date format: " + dateStr, e);
+        }
+    }
+
+    private double validateTemperature(String tempStr) throws NumberFormatException {
+        return Double.parseDouble(tempStr);
     }
 }

@@ -26,7 +26,7 @@ public class CsvWeatherFileReaderTest {
     public void testReadWeatherData_EmptyFile() {
         String filePath = "de/bcxp/challenge/empty_weather.csv";
 
-        Executable executable = () -> csvWeatherFileReader.readWeatherData(filePath);
+        Executable executable = () -> csvWeatherFileReader.readData(filePath, ",");
 
         FileNotFoundException exception = assertThrows(FileNotFoundException.class, executable);
         assertEquals("The file is empty or not found: " + filePath, exception.getMessage());
@@ -36,7 +36,7 @@ public class CsvWeatherFileReaderTest {
     public void testReadWeatherData_InvalidHeader() {
         String filePath = "de/bcxp/challenge/invalid_header_weather.csv";
 
-        Executable executable = () -> csvWeatherFileReader.readWeatherData(filePath);
+        Executable executable = () -> csvWeatherFileReader.readData(filePath, ",");
 
         FileFormatException exception = assertThrows(FileFormatException.class, executable);
         assertEquals("Invalid CSV file format. Expected headers: Day,MxT,MnT", exception.getMessage());
@@ -46,7 +46,7 @@ public class CsvWeatherFileReaderTest {
     public void testReadWeatherData_InvalidLine() throws Exception {
         String filePath = "de/bcxp/challenge/invalid_line_weather.csv";
 
-        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readWeatherData(filePath);
+        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
 
         assertEquals(1, weatherRecords.size());
         assertEquals("3", weatherRecords.get(0).getDate());
@@ -58,7 +58,7 @@ public class CsvWeatherFileReaderTest {
     public void testReadWeatherData_ValidFile() throws Exception {
         String filePath = "de/bcxp/challenge/test_weather.csv"; // Ensure this file has valid data
 
-        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readWeatherData(filePath);
+        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
 
         // Assertions
         assertEquals(3, weatherRecords.size());

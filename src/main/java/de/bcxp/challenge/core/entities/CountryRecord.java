@@ -15,11 +15,11 @@ public class CountryRecord {
         return name;
     }
 
-    public Number getPopulation() {
+    public Long getPopulation() {
         return population;
     }
 
-    public Number getArea() {
+    public Double getArea() {
         return area;
     }
 

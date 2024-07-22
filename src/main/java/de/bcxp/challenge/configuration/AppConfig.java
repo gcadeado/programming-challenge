@@ -6,6 +6,7 @@ import de.bcxp.challenge.adapters.repository.FileCountryRepository;
 import de.bcxp.challenge.adapters.repository.FileWeatherRepository;
 import de.bcxp.challenge.adapters.service.ConsoleCountryDisplayService;
 import de.bcxp.challenge.adapters.service.ConsoleWeatherDisplayService;
+import de.bcxp.challenge.core.entities.CountryRecord;
 import de.bcxp.challenge.core.entities.WeatherRecord;
 import de.bcxp.challenge.core.usecases.FindCountryHighestDensityUseCase;
 import de.bcxp.challenge.core.usecases.FindDayLowestTemperatureRangeUseCase;
@@ -16,10 +17,10 @@ public class AppConfig {
     public static void main(String[] args) {
 
         // Creates File Readers and injects them on Repositories objects
-        IWeatherFileReader fileReader = new CsvWeatherFileReader();
-        IWeatherRepository weatherRepository = new FileWeatherRepository(fileReader, "de/bcxp/challenge/weather.csv");
+        IFileReader<WeatherRecord> weatherFileReader = new CsvWeatherFileReader();
+        IWeatherRepository weatherRepository = new FileWeatherRepository(weatherFileReader, "de/bcxp/challenge/weather.csv");
 
-        ICountryFileReader countryFileReader = new CsvCountryFileReader();
+        IFileReader<CountryRecord> countryFileReader = new CsvCountryFileReader();
         ICountryRepository countryRepository = new FileCountryRepository(countryFileReader,"de/bcxp/challenge/countries.csv");
 
         // Services

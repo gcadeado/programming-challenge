@@ -37,7 +37,7 @@ public class FileWeatherRepositoryTest {
         );
 
         // Mock behavior
-        when(mockCsvWeatherFileReader.readWeatherData("test_weather.csv")).thenReturn(mockWeatherRecords);
+        when(mockCsvWeatherFileReader.readData("test_weather.csv", ",")).thenReturn(mockWeatherRecords);
 
         // Test the method
         List<WeatherRecord> weatherRecords = weatherRepository.getAllWeatherData();
