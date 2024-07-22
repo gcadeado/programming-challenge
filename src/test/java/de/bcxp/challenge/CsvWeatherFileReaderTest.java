@@ -43,7 +43,7 @@ public class CsvWeatherFileReaderTest {
     }
 
     @Test
-    public void testReadWeatherData_InvalidLine() throws Exception {
+    public void testReadWeatherData_InvalidLine() {
         String filePath = "de/bcxp/challenge/invalid_line_weather.csv";
 
         List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
@@ -55,7 +55,7 @@ public class CsvWeatherFileReaderTest {
     }
 
     @Test
-    public void testReadWeatherData_ValidFile() throws Exception {
+    public void testReadWeatherData_ValidFile() {
         String filePath = "de/bcxp/challenge/test_weather.csv"; // Ensure this file has valid data
 
         List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
