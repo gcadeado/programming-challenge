@@ -1,25 +1,30 @@
 package de.bcxp.challenge.configuration;
 
+import de.bcxp.challenge.adapters.repository.CsvCountryFileReader;
 import de.bcxp.challenge.adapters.repository.CsvWeatherFileReader;
+import de.bcxp.challenge.adapters.repository.FileCountryRepository;
 import de.bcxp.challenge.adapters.repository.FileWeatherRepository;
+import de.bcxp.challenge.adapters.service.ConsoleCountryDisplayService;
 import de.bcxp.challenge.adapters.service.ConsoleWeatherDisplayService;
 import de.bcxp.challenge.core.entities.WeatherRecord;
+import de.bcxp.challenge.core.usecases.FindCountryHighestDensityUseCase;
 import de.bcxp.challenge.core.usecases.FindDayLowestTemperatureRangeUseCase;
-import de.bcxp.challenge.ports.IWeatherFileReader;
-import de.bcxp.challenge.ports.IWeatherDisplayService;
-import de.bcxp.challenge.ports.IWeatherRepository;
+import de.bcxp.challenge.core.usecases.GetCountryDataUseCase;
+import de.bcxp.challenge.ports.*;
 
 public class AppConfig {
     public static void main(String[] args) {
 
-        String filePath = "de/bcxp/challenge/weather.csv"; // TODO make this a program parameter
-
-        // Creates the File Reader and injects it on a new Weather Repository
+        // Creates File Readers and injects them on Repositories objects
         IWeatherFileReader fileReader = new CsvWeatherFileReader();
-        IWeatherRepository weatherRepository = new FileWeatherRepository(fileReader, filePath);
+        IWeatherRepository weatherRepository = new FileWeatherRepository(fileReader, "de/bcxp/challenge/weather.csv");
+
+        ICountryFileReader countryFileReader = new CsvCountryFileReader();
+        ICountryRepository countryRepository = new FileCountryRepository(countryFileReader,"de/bcxp/challenge/countries.csv");
 
         // Services
         IWeatherDisplayService weatherDisplayService = new ConsoleWeatherDisplayService();
+        ICountryStatisticsService countryStatisticsService = new ConsoleCountryDisplayService();
 
         // Use cases
         FindDayLowestTemperatureRangeUseCase findDayLowestTemperatureRangeUseCase = new FindDayLowestTemperatureRangeUseCase(weatherRepository);
@@ -27,5 +32,10 @@ public class AppConfig {
         // Execute the required use cases and display data
         WeatherRecord dayWithLowestTemperatureRange = findDayLowestTemperatureRangeUseCase.execute();
         weatherDisplayService.displayDayWithLowestTemperatureRange(dayWithLowestTemperatureRange);
+
+        // Country data configuration
+        GetCountryDataUseCase getCountryDataUseCase = new GetCountryDataUseCase(countryRepository);
+        FindCountryHighestDensityUseCase findCountryHighestDensityUseCase = new FindCountryHighestDensityUseCase();
+        countryStatisticsService.displayCountryWithHighestDensity(findCountryHighestDensityUseCase.execute(getCountryDataUseCase.execute()));
     }
 }
