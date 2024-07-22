@@ -1,4 +1,4 @@
-package de.bcxp.challenge.adapters.repository;
+package de.bcxp.challenge.adapters.csv;
 
 import de.bcxp.challenge.exceptions.FileException;
 import de.bcxp.challenge.exceptions.FileFormatException;
@@ -14,11 +14,32 @@ import java.util.*;
 
 public abstract class CsvFileReader<T> implements IFileReader<T> {
 
+    private final String filePath;
+    private final CsvParser parser;
+
+    public CsvParser getParser() {
+        return this.parser;
+    }
+
+    public String getFilePath() {
+        return this.filePath;
+    }
+
+    protected CsvFileReader(String filePath) {
+        this.filePath = filePath;
+        this.parser = new CsvParser.CsvParserBuilder().build();
+    }
+
+    protected CsvFileReader(String filePath, CsvParser parser) {
+        this.filePath = filePath;
+        this.parser = parser;
+    }
+
     protected abstract T parseLine(String[] values, Map<String, Integer> columnIndexes) throws FileFormatException;
 
     protected abstract String[] getExpectedHeaders();
 
-    public List<T> readData(String filePath, String delimiter) {
+    public List<T> readData() {
         List<T> records = new ArrayList<>();
         ClassLoader classLoader = getClass().getClassLoader();
 
@@ -30,11 +51,11 @@ public abstract class CsvFileReader<T> implements IFileReader<T> {
                 throw new FileNotFoundException("The file is empty or not found: " + filePath);
             }
 
-            Map<String, Integer> headerColumnIndexes = getHeaderColumnIndexes(headerLine, delimiter);
+            Map<String, Integer> headerColumnIndexes = getHeaderColumnIndexes(headerLine, parser.getDelimiter());
 
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(delimiter);
+                String[] values = line.split(parser.getDelimiter());
                 try {
                     T record = parseLine(values, headerColumnIndexes);
                     records.add(record);

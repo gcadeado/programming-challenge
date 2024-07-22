@@ -8,15 +8,13 @@ import java.util.List;
 
 public class FileWeatherRepository implements IWeatherRepository {
     private final IFileReader<WeatherRecord> weatherFileReader;
-    private final String filePath;
 
-    public FileWeatherRepository(IFileReader<WeatherRecord> weatherFileReader, String filePath) {
+    public FileWeatherRepository(IFileReader<WeatherRecord> weatherFileReader) {
         this.weatherFileReader = weatherFileReader;
-        this.filePath = filePath;
     }
 
     @Override
     public List<WeatherRecord> getAllWeatherData() {
-        return weatherFileReader.readData(filePath, ",");
+        return weatherFileReader.readData();
     }
 }

@@ -8,15 +8,13 @@ import java.util.List;
 
 public class FileCountryRepository implements ICountryRepository {
     private final IFileReader<CountryRecord> countryFileReader;
-    private final String filePath;
 
-    public FileCountryRepository(IFileReader<CountryRecord> countryFileReader, String filePath) {
+    public FileCountryRepository(IFileReader<CountryRecord> countryFileReader) {
         this.countryFileReader = countryFileReader;
-        this.filePath = filePath;
     }
 
     @Override
     public List<CountryRecord> getAllCountryData() {
-        return countryFileReader.readData(filePath, ";");
+        return countryFileReader.readData();
     }
 }

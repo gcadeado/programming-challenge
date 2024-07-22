@@ -1,6 +1,6 @@
 package de.bcxp.challenge;
 
-import de.bcxp.challenge.adapters.repository.CsvWeatherFileReader;
+import de.bcxp.challenge.adapters.csv.CsvWeatherFileReader;
 import de.bcxp.challenge.core.entities.WeatherRecord;
 
 import java.util.List;
@@ -10,23 +10,26 @@ import de.bcxp.challenge.exceptions.FileNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import de.bcxp.challenge.adapters.csv.CsvParser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CsvWeatherFileReaderTest {
     private CsvWeatherFileReader csvWeatherFileReader;
+    private CsvParser csvParser;
 
     @BeforeEach
     public void setUp() {
-        csvWeatherFileReader = new CsvWeatherFileReader();
+        csvParser = new CsvParser.CsvParserBuilder().build();
     }
 
     @Test
     public void testReadWeatherData_EmptyFile() {
         String filePath = "de/bcxp/challenge/empty_weather.csv";
+        csvWeatherFileReader = new CsvWeatherFileReader(filePath, csvParser);
 
-        Executable executable = () -> csvWeatherFileReader.readData(filePath, ",");
+        Executable executable = () -> csvWeatherFileReader.readData();
 
         FileNotFoundException exception = assertThrows(FileNotFoundException.class, executable);
         assertEquals("The file is empty or not found: " + filePath, exception.getMessage());
@@ -35,8 +38,9 @@ public class CsvWeatherFileReaderTest {
     @Test
     public void testReadWeatherData_InvalidHeader() {
         String filePath = "de/bcxp/challenge/invalid_header_weather.csv";
+        csvWeatherFileReader = new CsvWeatherFileReader(filePath, csvParser);
 
-        Executable executable = () -> csvWeatherFileReader.readData(filePath, ",");
+        Executable executable = () -> csvWeatherFileReader.readData();
 
         FileFormatException exception = assertThrows(FileFormatException.class, executable);
         assertEquals("Invalid CSV file format. Expected headers: Day,MxT,MnT", exception.getMessage());
@@ -45,8 +49,9 @@ public class CsvWeatherFileReaderTest {
     @Test
     public void testReadWeatherData_InvalidLine() {
         String filePath = "de/bcxp/challenge/invalid_line_weather.csv";
+        csvWeatherFileReader = new CsvWeatherFileReader(filePath, csvParser);
 
-        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
+        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData();
 
         assertEquals(1, weatherRecords.size());
         assertEquals("3", weatherRecords.get(0).getDate());
@@ -57,8 +62,9 @@ public class CsvWeatherFileReaderTest {
     @Test
     public void testReadWeatherData_ValidFile() {
         String filePath = "de/bcxp/challenge/test_weather.csv"; // Ensure this file has valid data
+        csvWeatherFileReader = new CsvWeatherFileReader(filePath, csvParser);
 
-        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData(filePath, ",");
+        List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData();
 
         // Assertions
         assertEquals(3, weatherRecords.size());

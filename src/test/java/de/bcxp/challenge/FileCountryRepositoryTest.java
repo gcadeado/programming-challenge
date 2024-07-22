@@ -1,6 +1,6 @@
 package de.bcxp.challenge;
 
-import de.bcxp.challenge.adapters.repository.CsvCountryFileReader;
+import de.bcxp.challenge.adapters.csv.CsvCountryFileReader;
 import de.bcxp.challenge.adapters.repository.FileCountryRepository;
 import de.bcxp.challenge.core.entities.CountryRecord;
 import de.bcxp.challenge.ports.ICountryRepository;
@@ -24,7 +24,7 @@ public class FileCountryRepositoryTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        countryRepository = new FileCountryRepository(mockCsvCountryFileReader, "test_country.csv");
+        countryRepository = new FileCountryRepository(mockCsvCountryFileReader);
     }
 
     @Test
@@ -37,7 +37,7 @@ public class FileCountryRepositoryTest {
         );
 
         // Mock behavior
-        when(mockCsvCountryFileReader.readData("test_country.csv", ";")).thenReturn(mockCountryRecords);
+        when(mockCsvCountryFileReader.readData()).thenReturn(mockCountryRecords);
 
         // Test the method
         List<CountryRecord> CountryRecords = countryRepository.getAllCountryData();

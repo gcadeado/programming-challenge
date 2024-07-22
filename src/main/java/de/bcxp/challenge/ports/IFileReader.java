@@ -3,5 +3,5 @@ package de.bcxp.challenge.ports;
 import java.util.List;
 
 public interface IFileReader<T> {
-    List<T> readData(String filePath, String delimiter);
+    List<T> readData();
 }
