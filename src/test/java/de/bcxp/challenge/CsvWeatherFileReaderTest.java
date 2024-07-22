@@ -61,7 +61,7 @@ public class CsvWeatherFileReaderTest {
 
     @Test
     public void testReadWeatherData_ValidFile() {
-        String filePath = "de/bcxp/challenge/test_weather.csv"; // Ensure this file has valid data
+        String filePath = "de/bcxp/challenge/test_weather.csv";
         csvWeatherFileReader = new CsvWeatherFileReader(filePath, csvParser);
 
         List<WeatherRecord> weatherRecords = csvWeatherFileReader.readData();

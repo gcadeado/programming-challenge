@@ -58,7 +58,7 @@ public class CsvCountriesFileReaderTest {
         List<CountryRecord> countryRecords = csvCountryFileReader.readData();
 
         // Assertions
-        assertEquals(3, countryRecords.size()); // Adjust based on your test file content
+        assertEquals(3, countryRecords.size());
         assertEquals("Austria", countryRecords.get(0).getName());
         assertEquals(8926000, countryRecords.get(0).getPopulation(), 0.01);
         assertEquals(83855, countryRecords.get(0).getArea(), 0.01);
