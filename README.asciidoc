@@ -6,7 +6,6 @@
 This repository provides a solution for the
 programming challenge.
 
-
 See the link:Solution.md[solution page] for detailed explanations, architecture decisions and diagrams.
 
 == Goal
@@ -42,38 +41,7 @@ Task::
 Process::
 * Favour the software design goals described under _Goal_ over other goals 
   like _performance_ or _feature set_.
-* Include unit tests to ensure the correctness of your implementation.
-
-
-=== Hints
-
-Your solution should focus on **maintainability**, **reusability** and
-**readability**. Here are some hints on how you may achieve these goals:
-
-1. The most important aspect is **separation of concerns**. Think about
-   the different concerns involved in the task and how they may need to
-   change in the future. For example: one concern is reading the file.
-   What others components can you think of? Try to design separate,
-   concise software components for each concern.
-
-2. Often a quick diagram illustrating the components and their interactions
-   can be helpful. If you draw a diagram, feel free to include it in your
-   solution.
-
-3. Design **intuitive interfaces** for the components in a way that each
-   component can be replaced. For example in the next evolution step
-   of your solution you might need to support other data formats like
-   JSON files or even Web services. The Reader for the CSV-files in your
-   example could be replaced with a reader that implements the same
-   interface but reads JSON-files.
-
-4. Use **meaningful names** for classes, properties and methods. By
-   reading the name, one should already have an idea of what something
-   does.
-
-5. Think about possible **error cases**, e.g. if a file is empty or contains invalid input, and how they should be handled. Use log messages where necessary.
-
-6. You may use additional third-party dependencies as you see fit. Please include your reasoning for your choice of libraries in your solution.
+* Include unit tests to ensure the correctness of the implementation.
 
 == Getting started
 

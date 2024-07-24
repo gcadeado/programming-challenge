@@ -1,96 +1,96 @@
 package de.bcxp.challenge.adapters.csv;
 
-import de.bcxp.challenge.exceptions.FileException;
-import de.bcxp.challenge.exceptions.FileFormatException;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import de.bcxp.challenge.exceptions.CsvFileFormatException;
 import de.bcxp.challenge.exceptions.FileNotFoundException;
 import de.bcxp.challenge.ports.IFileReader;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Base class for reading CSV files.
+ * <p>
+ * This class utilizes OpenCSV in conjunction with Java Beans to parse and map CSV data into Java objects.
+ */
 
 public abstract class CsvFileReader<T> implements IFileReader<T> {
 
-    private final String filePath;
-    private final CsvParser parser;
+    // Required fields
+    private final InputStream inputStream;
+    private final char separator;
 
-    public CsvParser getParser() {
-        return this.parser;
+    // Optional fields
+    protected String locale;
+
+    protected CsvFileReader(Builder<T> builder) {
+        this.inputStream = builder.inputStream;
+        this.locale = builder.locale;
+        this.separator = builder.separator;
     }
 
-    public String getFilePath() {
-        return this.filePath;
-    }
+    protected abstract LocalizedHeaderColumnNameTranslateMappingStrategy<T> createMappingStrategy();
 
-    protected CsvFileReader(String filePath) {
-        this.filePath = filePath;
-        this.parser = new CsvParser.CsvParserBuilder().build();
-    }
-
-    protected CsvFileReader(String filePath, CsvParser parser) {
-        this.filePath = filePath;
-        this.parser = parser;
-    }
-
-    protected abstract T parseLine(String[] values, Map<String, Integer> columnIndexes) throws FileFormatException;
-
-    protected abstract String[] getExpectedHeaders();
-
-    public List<T> readData() {
-        List<T> records = new ArrayList<>();
-        ClassLoader classLoader = getClass().getClassLoader();
-
-        try (InputStream inputStream = classLoader.getResourceAsStream(filePath);
-             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
-            String headerLine = br.readLine();
-            if (inputStream == null || headerLine == null) {
-                throw new FileNotFoundException("The file is empty or not found: " + filePath);
+    @Override
+    public List<T> readData() throws CsvFileFormatException, FileNotFoundException {
+        try {
+            if (inputStream == null || inputStream.available() == 0) {
+                throw new FileNotFoundException("The file is empty or not found");
             }
-
-            Map<String, Integer> headerColumnIndexes = getHeaderColumnIndexes(headerLine, parser.getDelimiter());
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(parser.getDelimiter());
-                try {
-                    T record = parseLine(values, headerColumnIndexes);
-                    records.add(record);
-                } catch (FileFormatException e) {
-                    System.err.println("Error parsing line: " + line + " - " + e.getMessage());
-                }
-            }
-
         } catch (IOException e) {
-            throw new FileException("Error reading CSV file: " + filePath, e);
+            throw new FileNotFoundException("The file is empty or not found");
         }
 
-        return records;
+        try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+
+            LocalizedHeaderColumnNameTranslateMappingStrategy<T> strategy = createMappingStrategy();
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
+                    .withThrowExceptions(true)
+                    .withSeparator(separator)
+                    .withMappingStrategy(strategy)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
+
+            return csvToBean.parse();
+        } catch (Exception e) {
+            throw new CsvFileFormatException("Error reading CSV file", e);
+        }
     }
 
-    protected Map<String, Integer> getHeaderColumnIndexes(String headerLine, String delimiter) {
-        validateHeaders(headerLine, delimiter);
-        String[] headers = getExpectedHeaders();
-        String[] actualHeaders = headerLine.split(delimiter);
-        Map<String, Integer> headerColumIndexes = new HashMap<String, Integer>();
-        for (String header : headers) {
-            headerColumIndexes.put(header, Arrays.asList(actualHeaders).indexOf(header));
-        }
-        return headerColumIndexes;
-    }
+    /**
+     * Builder base class for constructing a CsvFileReader using the Builder Pattern
+     */
+    public static abstract class Builder<T> {
+        // Required fields
+        private final InputStream inputStream;
 
-    protected void validateHeaders(String headerLine, String delimiter) {
-        String[] headers = getExpectedHeaders();
-        String[] actualHeaders = headerLine.split(delimiter);
-        if (actualHeaders.length < headers.length) {
-            throw new FileFormatException("Invalid CSV file format. Expected headers: " + String.join(",", headers));
+        // Optional fields
+        private String locale = Locale.getDefault().getLanguage();
+        private char separator = ',';
+
+        public Builder(InputStream inputStream) {
+            this.inputStream = inputStream;
         }
 
-        if (!Arrays.asList(actualHeaders).containsAll(Arrays.asList(headers))) {
-            throw new FileFormatException("Invalid CSV file format. Expected headers: " + String.join(",", headers));
+        /**
+         *
+         * @param locale the alpha-2 or alpha-3 language code
+         */
+        public Builder<T> withLocale(String locale) {
+            this.locale = locale;
+            return this;
         }
+
+        public Builder<T> withSeparator(char separator) {
+            this.separator = separator;
+            return this;
+        }
+
+        public abstract CsvFileReader<T> build();
     }
 }
