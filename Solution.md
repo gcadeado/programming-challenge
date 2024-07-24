@@ -40,9 +40,16 @@ highlighting the separation of concerns (layer) and the flow of dependencies.
 
 <img src="bcxp-solution-diagram.png">
 
+# Other used architectures and patterns
+- Builder Pattern with Generics - CsvFileReader and it's derived classes
+- Strategy Pattern - CsvFileReader with IFileReader interface
+
+# Other used libraries
+- OpenCsv due to ease-of-use and to customize and extend, providing robust parsing, in addition to JavaBean integrations
+- Mockito for managing dependencies and mocking external interactions
+
 # Next steps
 
-- Refactor CsvFileReader to leverage Builder Pattern Architecture; or 
-- (better) Refactor CSV files to use OpenCSV: a CSV reader was built from scratch in this challenge for learning purposes, a well-defined and complete community package like openCSV could be used instead
-
-- Create csv-related Exceptions for a more granular exception handling (in case we have JSON and other types of files)
+- Validate required headers and create necessary tests
+- Add more validations for read data (e.g. date and temperature ranges)
+- Fix OpenCsv's exceptions from concurrent threads in tests

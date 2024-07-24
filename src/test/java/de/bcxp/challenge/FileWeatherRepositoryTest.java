@@ -1,23 +1,23 @@
 package de.bcxp.challenge;
 
-import de.bcxp.challenge.adapters.csv.CsvWeatherFileReader;
 import de.bcxp.challenge.adapters.repository.FileWeatherRepository;
 import de.bcxp.challenge.core.entities.WeatherRecord;
+import de.bcxp.challenge.ports.IFileReader;
 import de.bcxp.challenge.ports.IWeatherRepository;
-
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class FileWeatherRepositoryTest {
     @Mock
-    private CsvWeatherFileReader mockCsvWeatherFileReader;
+    private IFileReader<WeatherRecord> mockCsvWeatherFileReader;
 
     private IWeatherRepository weatherRepository;
 
@@ -34,7 +34,7 @@ public class FileWeatherRepositoryTest {
                 new WeatherRecord("1", 88.0, 59),
                 new WeatherRecord("2", 79.0, 63.0),
                 new WeatherRecord("3", 77.0, 55.0)
-        );
+                                                              );
 
         // Mock behavior
         when(mockCsvWeatherFileReader.readData()).thenReturn(mockWeatherRecords);

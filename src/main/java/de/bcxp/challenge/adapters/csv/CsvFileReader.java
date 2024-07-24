@@ -6,7 +6,6 @@ import de.bcxp.challenge.exceptions.CsvFileFormatException;
 import de.bcxp.challenge.exceptions.FileNotFoundException;
 import de.bcxp.challenge.ports.IFileReader;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,8 +14,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Base class for Csv File Reader
- * This class uses OpenCSV in combination with Java Beans for parsing data
+ * Base class for reading CSV files.
+ * <p>
+ * This class utilizes OpenCSV in conjunction with Java Beans to parse and map CSV data into Java objects.
  */
 
 public abstract class CsvFileReader<T> implements IFileReader<T> {
@@ -24,8 +24,9 @@ public abstract class CsvFileReader<T> implements IFileReader<T> {
     // Required fields
     private final InputStream inputStream;
     private final char separator;
+
     // Optional fields
-    protected Locale locale;
+    protected String locale;
 
     protected CsvFileReader(Builder<T> builder) {
         this.inputStream = builder.inputStream;
@@ -61,17 +62,26 @@ public abstract class CsvFileReader<T> implements IFileReader<T> {
         }
     }
 
-    // Builder class
+    /**
+     * Builder base class for constructing a CsvFileReader using the Builder Pattern
+     */
     public static abstract class Builder<T> {
+        // Required fields
         private final InputStream inputStream;
-        private Locale locale = Locale.getDefault();
+
+        // Optional fields
+        private String locale = Locale.getDefault().getLanguage();
         private char separator = ',';
 
         public Builder(InputStream inputStream) {
             this.inputStream = inputStream;
         }
 
-        public Builder<T> withLocale(Locale locale) {
+        /**
+         *
+         * @param locale the alpha-2 or alpha-3 language code
+         */
+        public Builder<T> withLocale(String locale) {
             this.locale = locale;
             return this;
         }

@@ -4,6 +4,7 @@ import de.bcxp.challenge.adapters.csv.CsvCountryFileReader;
 import de.bcxp.challenge.adapters.repository.FileCountryRepository;
 import de.bcxp.challenge.core.entities.CountryRecord;
 import de.bcxp.challenge.ports.ICountryRepository;
+import de.bcxp.challenge.ports.IFileReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 public class FileCountryRepositoryTest {
     @Mock
-    private CsvCountryFileReader mockCsvCountryFileReader;
+    private IFileReader<CountryRecord> mockCsvCountryFileReader;
 
     private ICountryRepository countryRepository;
 

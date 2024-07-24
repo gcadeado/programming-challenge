@@ -8,12 +8,16 @@ import java.util.Currency;
 import java.util.UUID;
 
 /**
- * Custom extension to OpenCSV's HeaderColumnNameTranslateMappingStrategy class
- * to support localization when converting field values.
- * Note: Entities shouldn't know things related to how to read/get the data,
- * this is a solution since we don't want to annotate entity classes with Csv Annotations,
- * and OpenCsv library doesn't give us a nice API for custom validations without the using of annotations
- * @see <a href="https://sourceforge.net/p/opencsv/feature-requests/125/">this thread</a>
+ * A custom extension of OpenCSV's HeaderColumnNameTranslateMappingStrategy class to support localization when converting field values.
+ * <p>
+ * This class addresses the need for localized field value conversion without requiring annotations on entity classes.
+ * OpenCSV does not provide an API for custom validations that avoids the use of annotations, and this extension offers
+ * a solution to that limitation.
+ * <p>
+ * Note: It is generally recommended that entities should not contain logic regarding data reading or extraction.
+ * This approach avoids the necessity of annotating entity classes with CSV annotations.
+ *
+ * @see <a href="https://sourceforge.net/p/opencsv/feature-requests/125/">Feature Request Thread on SourceForge</a>
  */
 public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends HeaderColumnNameTranslateMappingStrategy<T> {
     private String locale = null;

@@ -28,7 +28,7 @@ public class AppConfig {
         // Creates file readers using common file interfaces and injects file streams
         IFileReader<WeatherRecord> weatherReader = new CsvWeatherFileReader.Builder(weatherInputStream).build();
         IFileReader<CountryRecord> countryReader =
-                new CsvCountryFileReader.Builder(countryInputStream).withLocale(Locale.GERMANY)
+                new CsvCountryFileReader.Builder(countryInputStream).withLocale(Locale.GERMANY.getLanguage())
                         .withSeparator(';')
                         .build(); // Use de-DE locale for parsing file
 
