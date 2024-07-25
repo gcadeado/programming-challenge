@@ -1,3 +1,11 @@
+# Solution
+
+This document proposes a solution to the challenge, detailing the necessary architectures, considerations and next steps.
+
+The development process was divided into milestones for each part of the challenge, following Gitflow methods. Each milestone was merged into the main branch, which contains the complete solution.
+
+For the working code of each milestone, please refer to [part-1-weather-challenge](https://github.com/gcadeado/programming-challenge/tree/part-1-weather-challenge) and [part-1-weather-challenge](https://github.com/gcadeado/programming-challenge/tree/part-2-countries-challenge).
+
 # Architecture
 
 For a simple Java application without a UI, with a focus on separation of concerns, 
