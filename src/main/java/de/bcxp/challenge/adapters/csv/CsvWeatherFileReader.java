@@ -20,7 +20,7 @@ public class CsvWeatherFileReader extends CsvFileReader<WeatherRecord> {
 
         LocalizedHeaderColumnNameTranslateMappingStrategy<WeatherRecord> strategy =
                 new LocalizedHeaderColumnNameTranslateMappingStrategy<>();
-        strategy.setLocale(locale.toString()); // This must be defined before setType
+        strategy.setLocale(locale); // This must be defined before setType
         strategy.setType(WeatherRecord.class);
         strategy.setColumnMapping(columnMapping);
 

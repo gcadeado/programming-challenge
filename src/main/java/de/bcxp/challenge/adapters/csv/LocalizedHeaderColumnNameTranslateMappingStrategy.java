@@ -1,11 +1,16 @@
 package de.bcxp.challenge.adapters.csv;
 
+import com.opencsv.CSVReader;
 import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvBadConverterException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.apache.commons.collections4.ListValuedMap;
+import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Currency;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A custom extension of OpenCSV's HeaderColumnNameTranslateMappingStrategy class to support localization when converting field values.
@@ -20,6 +25,7 @@ import java.util.UUID;
  * @see <a href="https://sourceforge.net/p/opencsv/feature-requests/125/">Feature Request Thread on SourceForge</a>
  */
 public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends HeaderColumnNameTranslateMappingStrategy<T> {
+    protected RequiredFieldMapByName<T> fieldMap = null;
     private String locale = null;
 
     /**
@@ -29,6 +35,60 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         this.locale = locale;
     }
 
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
+    @Override
+    protected void initializeFieldMap() {
+        this.fieldMap = new RequiredFieldMapByName<>(this.errorLocale);
+        this.fieldMap.setColumnOrderOnWrite(this.writeOrder);
+    }
+
+    /**
+     * Overrides method from parent class
+     */
+    @Override
+    protected void loadUnadornedFieldMap(ListValuedMap<Class<?>, Field> fields) {
+        fields.entries().stream().filter((entry) -> !Serializable.class.isAssignableFrom(entry.getKey()) ||
+                                                !"serialVersionUID".equals(entry.getValue().getName())).forEach((entry) -> {
+            CsvConverter converter = this.determineConverter(entry.getValue(),
+                    entry.getValue().getType(),
+                    null,
+                    null,
+                    null);
+            this.fieldMap.put(entry.getValue().getName().toUpperCase(),
+                    new BeanFieldSingleValue<>(entry.getKey(),
+                            entry.getValue(),
+                            true,
+                            this.errorLocale,
+                            converter,
+                            null,
+                            null));
+        });
+    }
+
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
+    @Override
+    protected BeanField<T, String> findField(int col) throws CsvBadConverterException {
+        BeanField<T, String> beanField = null;
+        String columnName = this.getColumnName(col);
+        if (columnName == null) {
+            return null;
+        } else {
+            columnName = columnName.trim();
+            if (!columnName.isEmpty()) {
+                beanField = this.fieldMap.get(columnName.toUpperCase());
+            }
+            return beanField;
+        }
+    }
+
+    /**
+     * Overrides method from parent class
+     * Ignores customConverter since annotations aren't used
+     */
     @Override
     protected CsvConverter determineConverter(
             Field field,
@@ -38,8 +98,6 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
             Class<? extends AbstractCsvConverter> customConverter)
             throws CsvBadConverterException {
         CsvConverter converter;
-
-        // Ignoring all CsvAnnotations since we don't want to annotate entities for csv
 
         if (elementType.equals(Currency.class)) {
             converter = new ConverterCurrency(this.errorLocale);
@@ -52,5 +110,53 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         }
 
         return converter;
+    }
+
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
+    @Override
+    public void captureHeader(CSVReader reader) throws IOException, CsvRequiredFieldEmptyException {
+        if (this.type == null) {
+            throw new IllegalStateException(ResourceBundle.getBundle("opencsv", this.errorLocale)
+                    .getString("type.unset"));
+        } else {
+            String[] header = ArrayUtils.nullToEmpty(reader.readNextSilently());
+
+            for (int i = 0; i < header.length; ++i) {
+                if (header[i] == null) {
+                    header[i] = "";
+                }
+            }
+
+            this.headerIndex.initializeHeaderIndex(header);
+            List<FieldMapByNameEntry<T>> missingRequiredHeaders = this.fieldMap.determineMissingRequiredHeaders(header,
+                    getColumnMapping().keySet().toArray(new String[0]));
+            if (!missingRequiredHeaders.isEmpty()) {
+                String[] requiredHeaderNames = new String[missingRequiredHeaders.size()];
+                List<Field> requiredFields = new ArrayList<>(missingRequiredHeaders.size());
+
+                for (int i = 0; i < missingRequiredHeaders.size(); ++i) {
+                    FieldMapByNameEntry<T> fme = missingRequiredHeaders.get(i);
+                    if (fme.isRegexPattern()) {
+                        requiredHeaderNames[i] = String.format(ResourceBundle.getBundle("opencsv", this.errorLocale)
+                                .getString("matching"), fme.getName());
+                    } else {
+                        requiredHeaderNames[i] = fme.getName();
+                    }
+
+                    requiredFields.add(fme.getField().getField());
+                }
+
+                String missingRequiredFields = String.join(", ", requiredHeaderNames);
+                String allHeaders = String.join(",", header);
+                CsvRequiredFieldEmptyException e = new CsvRequiredFieldEmptyException(this.type,
+                        requiredFields,
+                        String.format(ResourceBundle.getBundle("opencsv", this.errorLocale)
+                                .getString("header.required.field.absent"), missingRequiredFields, allHeaders));
+                e.setLine(header);
+                throw e;
+            }
+        }
     }
 }

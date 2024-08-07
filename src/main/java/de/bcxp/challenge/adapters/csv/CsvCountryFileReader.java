@@ -21,7 +21,7 @@ public class CsvCountryFileReader extends CsvFileReader<CountryRecord> {
 
         LocalizedHeaderColumnNameTranslateMappingStrategy<CountryRecord> strategy =
                 new LocalizedHeaderColumnNameTranslateMappingStrategy<>();
-        strategy.setLocale(locale.toString()); // This must be defined before setType
+        strategy.setLocale(locale); // This must be defined before setType
         strategy.setType(CountryRecord.class);
         strategy.setColumnMapping(columnMapping);
 

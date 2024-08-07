@@ -10,7 +10,6 @@ import de.bcxp.challenge.core.entities.CountryRecord;
 import de.bcxp.challenge.core.entities.WeatherRecord;
 import de.bcxp.challenge.core.usecases.FindCountryHighestDensityUseCase;
 import de.bcxp.challenge.core.usecases.FindDayLowestTemperatureRangeUseCase;
-import de.bcxp.challenge.core.usecases.GetCountryDataUseCase;
 import de.bcxp.challenge.ports.*;
 
 import java.io.InputStream;
@@ -43,8 +42,8 @@ public class AppConfig {
         // Use cases
         FindDayLowestTemperatureRangeUseCase findDayLowestTemperatureRangeUseCase =
                 new FindDayLowestTemperatureRangeUseCase(weatherRepository);
-        GetCountryDataUseCase getCountryDataUseCase = new GetCountryDataUseCase(countryRepository);
-        FindCountryHighestDensityUseCase findCountryHighestDensityUseCase = new FindCountryHighestDensityUseCase();
+        FindCountryHighestDensityUseCase findCountryHighestDensityUseCase =
+                new FindCountryHighestDensityUseCase(countryRepository);
 
         // Execute the required use cases and display data
 
@@ -52,7 +51,7 @@ public class AppConfig {
         weatherDisplayService.displayDayWithLowestTemperatureRange(dayWithLowestTemperatureRange);
 
         CountryRecord countryWithHighestPopulation =
-                findCountryHighestDensityUseCase.execute(getCountryDataUseCase.execute());
+                findCountryHighestDensityUseCase.execute();
         countryStatisticsService.displayCountryWithHighestDensity(countryWithHighestPopulation);
     }
 }

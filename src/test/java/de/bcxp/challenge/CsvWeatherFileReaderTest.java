@@ -53,6 +53,30 @@ public class CsvWeatherFileReaderTest {
     }
 
     @Test
+    public void testReadWeatherData_MissingHeaders() {
+        InputStream inputStream =
+                AppConfig.class.getClassLoader().getResourceAsStream("de/bcxp/challenge/invalid_header_weather.csv");
+        IFileReader<WeatherRecord> weatherReader = new CsvWeatherFileReader.Builder(inputStream).build();
+
+        Executable executable = weatherReader::readData;
+
+        CsvFileFormatException exception = assertThrows(CsvFileFormatException.class, executable);
+        assertEquals("Error reading CSV file", exception.getMessage());
+    }
+
+    @Test
+    public void testReadWeatherData_MissingData() {
+        InputStream inputStream =
+                AppConfig.class.getClassLoader().getResourceAsStream("de/bcxp/challenge/missing_data_weather.csv");
+        IFileReader<WeatherRecord> weatherReader = new CsvWeatherFileReader.Builder(inputStream).build();
+
+        Executable executable = weatherReader::readData;
+
+        CsvFileFormatException exception = assertThrows(CsvFileFormatException.class, executable);
+        assertEquals("Error reading CSV file", exception.getMessage());
+    }
+
+    @Test
     public void testReadWeatherData_ValidFile() {
         InputStream inputStream =
                 AppConfig.class.getClassLoader().getResourceAsStream("de/bcxp/challenge/test_weather.csv");
