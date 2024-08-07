@@ -35,12 +35,18 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         this.locale = locale;
     }
 
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
     @Override
     protected void initializeFieldMap() {
         this.fieldMap = new RequiredFieldMapByName<>(this.errorLocale);
         this.fieldMap.setColumnOrderOnWrite(this.writeOrder);
     }
 
+    /**
+     * Overrides method from parent class
+     */
     @Override
     protected void loadUnadornedFieldMap(ListValuedMap<Class<?>, Field> fields) {
         fields.entries().stream().filter((entry) -> !Serializable.class.isAssignableFrom(entry.getKey()) ||
@@ -61,6 +67,9 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         });
     }
 
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
     @Override
     protected BeanField<T, String> findField(int col) throws CsvBadConverterException {
         BeanField<T, String> beanField = null;
@@ -76,6 +85,10 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         }
     }
 
+    /**
+     * Overrides method from parent class
+     * Ignores customConverter since annotations aren't used
+     */
     @Override
     protected CsvConverter determineConverter(
             Field field,
@@ -99,6 +112,9 @@ public class LocalizedHeaderColumnNameTranslateMappingStrategy<T> extends Header
         return converter;
     }
 
+    /**
+     * Overrides method from parent class with this fieldMap due to variable shadowing
+     */
     @Override
     public void captureHeader(CSVReader reader) throws IOException, CsvRequiredFieldEmptyException {
         if (this.type == null) {

@@ -23,13 +23,11 @@ public class FindCountryHighestDensityTest {
     private ICountryRepository mockCountryRepository;
 
     private FindCountryHighestDensityUseCase findCountryWithHighestDensityUseCase;
-    private GetCountryDataUseCase getCountryDataUseCase;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        getCountryDataUseCase = new GetCountryDataUseCase(mockCountryRepository);
-        findCountryWithHighestDensityUseCase = new FindCountryHighestDensityUseCase();
+        findCountryWithHighestDensityUseCase = new FindCountryHighestDensityUseCase(mockCountryRepository);
     }
 
     @Test
@@ -45,7 +43,7 @@ public class FindCountryHighestDensityTest {
         when(mockCountryRepository.getAllCountryData()).thenReturn(mockCountryRecords);
 
         // Test the method
-        CountryRecord result = findCountryWithHighestDensityUseCase.execute(getCountryDataUseCase.execute());
+        CountryRecord result = findCountryWithHighestDensityUseCase.execute();
 
         // Assertions
         assertEquals("Germany", result.getName());

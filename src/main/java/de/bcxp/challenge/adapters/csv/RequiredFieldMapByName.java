@@ -7,11 +7,17 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * A custom extension of OpenCSV's FieldMapByName class to support required fields in custom strategies
+ */
 public class RequiredFieldMapByName<T> extends FieldMapByName<T> {
     public RequiredFieldMapByName(Locale errorLocale) {
         super(errorLocale);
     }
 
+    /**
+     * Used in custom strategies, overrides method from parent class
+     */
     public List<FieldMapByNameEntry<T>> determineMissingRequiredHeaders(
             String[] headersPresent,
             String[] requiredHeaders) {
@@ -25,10 +31,5 @@ public class RequiredFieldMapByName<T> extends FieldMapByName<T> {
         }
 
         return missingRequiredHeaders;
-    }
-
-    public String[] generateHeader(T bean) {
-        List<String> headerList = new ArrayList<>(this.simpleMap.keySet());
-        return headerList.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
     }
 }

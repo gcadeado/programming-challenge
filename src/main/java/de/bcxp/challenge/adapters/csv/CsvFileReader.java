@@ -1,9 +1,7 @@
 package de.bcxp.challenge.adapters.csv;
 
-import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.MappingStrategy;
 import de.bcxp.challenge.exceptions.CsvFileFormatException;
 import de.bcxp.challenge.exceptions.FileNotFoundException;
 import de.bcxp.challenge.ports.IFileReader;
@@ -41,7 +39,6 @@ public abstract class CsvFileReader<T> implements IFileReader<T> {
 
     protected abstract LocalizedHeaderColumnNameTranslateMappingStrategy<T> createMappingStrategy();
 
-    @Override
     public List<T> readData() throws CsvFileFormatException, FileNotFoundException {
         try {
             if (inputStream == null || inputStream.available() == 0) {
