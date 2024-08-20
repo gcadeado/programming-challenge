@@ -30,6 +30,21 @@ public class CsvCountriesFileReaderTest {
     }
 
     @Test
+    public void testReadCountryData_InvalidSeparator() {
+        InputStream inputStream =
+                AppConfig.class.getClassLoader().getResourceAsStream("de/bcxp/challenge/test_countries.csv");
+        IFileReader<CountryRecord> countryReader =
+                new CsvCountryFileReader.Builder(inputStream).withSeparator(',')
+                        .withLocale(Locale.US.getLanguage())
+                        .build();
+
+        Executable executable = countryReader::readData;
+
+        CsvFileFormatException exception = assertThrows(CsvFileFormatException.class, executable);
+        assertEquals("Error reading CSV file", exception.getMessage());
+    }
+
+    @Test
     public void testReadCountryData_InvalidLine() {
         InputStream inputStream =
                 AppConfig.class.getClassLoader().getResourceAsStream("de/bcxp/challenge/invalid_line_countries.csv");
